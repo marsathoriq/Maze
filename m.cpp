@@ -49,6 +49,7 @@ void readInput(){
 
 
 //------------------------BFS ASTAR--------------------------//
+//Inisialisasi Kondisi Maze
 void init(bool visit[N][N]){
 	for(int i=0;i<N;i++){
 		for(int j=0;j<N;j++){
@@ -63,11 +64,12 @@ int Delay(int ms)
     while( clock() - starting < ms ) {}
     return 0;
 }
-
+// Prosedur mengepush nilai agar terurut
 void pushSort(pair <int,int> x,float bobot[N][N],deque < pair <int,int> >* simpul){
 	bool found=false;
 	pair <int,int> tmp;
 	deque< pair <int,int> > save;
+	//Mengeluarkan simpul yang kurang dari x dan menaruh ke deque save
 	while(!found&&!simpul->empty()){
 		tmp = simpul->back();
 		if(bobot[x.ff][x.ss]>bobot[tmp.ff][tmp.ss]){
@@ -77,6 +79,7 @@ void pushSort(pair <int,int> x,float bobot[N][N],deque < pair <int,int> >* simpu
 			save.push_back(tmp);
 		}
 	}
+	//Mengembalikan ke deque sebelumnya
 	simpul->push_back(x);
 	while(!save.empty()){
 		tmp = save.back();
@@ -84,12 +87,13 @@ void pushSort(pair <int,int> x,float bobot[N][N],deque < pair <int,int> >* simpu
 		simpul->push_back(tmp);
 	}
 }
-
+// Menghitung jarak dengan euclidian
 float jarakAkhir(int x1,int x2,int y1,int y2){
 	return sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
 }
- 
+//Algoritma BFS
 void BFS(char arr[N][N], int posX, int posY, int hslX, int hslY) {
+	//Semua koordinat tetangga
 	int mx[4]={1,0,-1,0};
 	int my[4]={0,1,0,-1};
 	pair <int,int> node,nextnode;
@@ -98,9 +102,11 @@ void BFS(char arr[N][N], int posX, int posY, int hslX, int hslY) {
 	bool visit[N][N];
 	
 	init(visit);
+	//isi deque simpul aktif
 	simpul.push_back(make_pair(posX,posY));
 	visit[posX][posY]=true;
 	node=simpul.front();
+	//Meyimpan jalur
 	path[node.ff][node.ss].push_back(node);
 	//arr[posX][posY] = ' '; //awal
 	while (node!=make_pair(hslX,hslY)){		
@@ -122,6 +128,7 @@ void BFS(char arr[N][N], int posX, int posY, int hslX, int hslY) {
 		path[node.ff][node.ss].push_back(node);
 		//break;
 	}
+	//Menyimpan jalur
 	for(int i=0;i<path[hslX][hslY].size();i++){
 		//arr[path[hslX][hslY][i].ff][path[hslX][hslY][i].ss] = ' ';
       area->setArr(' ',path[hslX][hslY][i].ff,path[hslX][hslY][i].ss);
@@ -129,7 +136,7 @@ void BFS(char arr[N][N], int posX, int posY, int hslX, int hslY) {
 		//cout<<path[xAk][yAk][i].ff<<" "<<path[xAk][yAk][i].ss<<endl;
 	} 
 }
-
+//Algoritma AStar
 void AStar(char arr[N][N], int posX, int posY, int hslX, int hslY) {
 	int mx[4]={1,0,-1,0};
 	int my[4]={0,1,0,-1};
@@ -144,6 +151,7 @@ void AStar(char arr[N][N], int posX, int posY, int hslX, int hslY) {
 	pushSort(make_pair(posX,posY),bobot,&simpul);
 	visit[posX][posY]=true;
 	node=simpul.front();
+	//Meyimpan jalur
 	path[node.ff][node.ss].push_back(node);
 		
 	while (node!=make_pair(hslX,hslY)){
@@ -154,6 +162,7 @@ void AStar(char arr[N][N], int posX, int posY, int hslX, int hslY) {
 			if(!visit[nextnode.ff][nextnode.ss]&&arr[nextnode.ff][nextnode.ss]=='0'){
 				path[nextnode.ff][nextnode.ss].assign(path[node.ff][node.ss].begin(), path[node.ff][node.ss].end());
 				visit[nextnode.ff][nextnode.ss] = true;
+				//Menghitung bobot titik
 				jarak[nextnode.ff][nextnode.ss] = jarak[node.ff][node.ss] + 1;
 				bobot[nextnode.ff][nextnode.ss] = jarak[nextnode.ff][nextnode.ss] + jarakAkhir(node.ff,hslX,node.ss,hslY);
 				//arr[nextnode.ff][nextnode.ss] = 'X'; 
@@ -164,7 +173,7 @@ void AStar(char arr[N][N], int posX, int posY, int hslX, int hslY) {
 		node=simpul.front();
 		path[node.ff][node.ss].push_back(node);
 	}
-	
+	//Menyimpan jalur
 	for(int i=0;i<path[hslX][hslY].size();i++){
 		//arr[path[hslX][hslY][i].ff][path[hslX][hslY][i].ss] = ' ';
       area->setArr(' ',path[hslX][hslY][i].ff,path[hslX][hslY][i].ss);      
